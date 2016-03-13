@@ -4,6 +4,8 @@ import Html exposing (Html, div, button, text)
 import Html.Events exposing (onClick)
 -- MODEL
 type alias Model = Int
+init : Int -> Int
+init x = x
 
 
 -- UPDATE
