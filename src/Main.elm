@@ -14,7 +14,7 @@ main =
   -- , update = Counter2.update
   -- , view = Counter2.view }
   start
-  { model = (fromList [0])
+  { model = CounterDynamic.init
   , update = CounterDynamic.update
   , view = CounterDynamic.view
   }

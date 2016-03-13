@@ -1,15 +1,12 @@
 module CounterDynamic where
 
 import Counter
-import Array exposing (Array)
 import Html exposing (..)
 import Html.Events exposing (onClick)
 
 -- MODEL
-type alias Model = Array Counter.Model
-
-init : Array Int -> Array Int
-init val = val
+type alias Model = List Counter.Model
+init = [Counter.init 0]
 
 -- UPDATE
 type Action =
@@ -22,14 +19,18 @@ update : Action -> Model -> Model
 update action model =
   case action of
     AddCounter ->
-      Array.push 0 model
+      model ++ [Counter.init 0]
     RemoveCounter ->
-      Array.slice 0 -1 model
+      List.take (List.length model - 1) model
     ClickCounter index act ->
       let
-        val = Maybe.withDefault 0 (Array.get index model)
+        updateCounter counterIndex counterModel =
+          if counterIndex == index
+             then Counter.update act counterModel
+             else counterModel
+
       in
-        Array.set index (Counter.update act val) model
+        List.indexedMap updateCounter model
 
 -- VIEW
 type alias Payload =
@@ -37,29 +38,19 @@ type alias Payload =
   , model: Counter.Model
   }
 
-indexedCounterView : Int -> Payload -> Html
-indexedCounterView i payload =
-  Counter.view (Signal.forwardTo payload.address (ClickCounter i)) payload.model
-
-payloadPacker : Signal.Address Action -> (Counter.Model -> Payload)
-payloadPacker address =
-  (\model -> { address = address, model = model })
 
 view : Signal.Address Action -> Model -> Html
 view address model =
   let
-    list_model = Array.toList model
-  in
-    div []
-    [
-      button [] [ text (toString model) ],
-      div []
-      (
-        List.indexedMap indexedCounterView
-        (List.map (payloadPacker address) list_model)
-      ),
-      div []
+    elements =
+      List.indexedMap (viewCounter address) model ++
       [ button [ onClick address AddCounter ] [ text "Add" ]
       , button [ onClick address RemoveCounter ] [ text "Remove" ]
       ]
-    ]
+  in
+    div [] elements
+
+viewCounter : Signal.Address Action -> Int -> Counter.Model -> Html
+viewCounter address index model =
+  Counter.view (Signal.forwardTo address (ClickCounter index)) model
+
