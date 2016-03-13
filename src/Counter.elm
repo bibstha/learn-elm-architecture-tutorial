@@ -1,7 +1,9 @@
 module Counter where
 
-import Html exposing (Html, div, button, text)
+import Html exposing (..)
 import Html.Events exposing (onClick)
+import Html.Attributes exposing (style)
+
 -- MODEL
 type alias Model = Int
 init : Int -> Int
@@ -25,6 +27,17 @@ view : Signal.Address Action -> Model -> Html
 view address model =
   div []
   [ button [ onClick address Decrement ] [ text "-" ]
-  , div [] [ text (toString model) ]
+  , div [countStyle] [ text (toString model) ]
   , button [ onClick address Increment ] [ text "+" ]
   ]
+
+countStyle : Attribute
+countStyle =
+  style
+    [ ("font-size", "20px")
+    , ("font-family", "monospace")
+    , ("display", "inline-block")
+    , ("width", "50px")
+    , ("text-align", "center")
+    ]
+

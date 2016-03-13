@@ -43,10 +43,10 @@ view : Signal.Address Action -> Model -> Html
 view address model =
   let
     elements =
-      List.indexedMap (viewCounter address) model ++
       [ button [ onClick address AddCounter ] [ text "Add" ]
       , button [ onClick address RemoveCounter ] [ text "Remove" ]
-      ]
+      ] ++
+      List.indexedMap (viewCounter address) model
   in
     div [] elements
 
